@@ -26,8 +26,7 @@ public class Player : MonoBehaviourPun
             photonView.RPC("SetName", RpcTarget.AllBuffered, GameData.playerName); //rpc ejecuta el metodo en todos los otro clientes
             localInstance = gameObject;
 
-            //aplica el color al jugador
-            GetComponent<Renderer>().material.color = GameData.playerColor;
+            // Sincroniza el color con un RPC
             photonView.RPC("SetColor", RpcTarget.AllBuffered, GameData.playerColor.r, GameData.playerColor.g, GameData.playerColor.b);
         }
         DontDestroyOnLoad(gameObject);
@@ -41,7 +40,13 @@ public class Player : MonoBehaviourPun
         playerNameText.text = playerName;
     }
 
-    // Update is called once per frame
+    [PunRPC]
+    private void SetColor(float r, float g, float b)
+    {
+        // Aplica el color al renderer del jugador
+        GetComponent<Renderer>().material.color = new Color(r, g, b);
+    }
+    
     void Update()
     {
         if (!photonView.IsMine || !PhotonNetwork.IsConnected)
