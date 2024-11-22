@@ -23,8 +23,12 @@ public class Player : MonoBehaviourPun
         if (photonView.IsMine)
         {
             playerNameText.text = GameData.playerName;
-            photonView.RPC("SetName", RpcTarget.AllBuffered, GameData.playerName);
+            photonView.RPC("SetName", RpcTarget.AllBuffered, GameData.playerName); //rpc ejecuta el metodo en todos los otro clientes
             localInstance = gameObject;
+
+            //aplica el color al jugador
+            GetComponent<Renderer>().material.color = GameData.playerColor;
+            photonView.RPC("SetColor", RpcTarget.AllBuffered, GameData.playerColor.r, GameData.playerColor.g, GameData.playerColor.b);
         }
         DontDestroyOnLoad(gameObject);
         rb = GetComponent<Rigidbody>();

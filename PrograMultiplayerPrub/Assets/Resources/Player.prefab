@@ -344,3 +344,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerNameText: {fileID: 5851241111823011930}
   speed: 6
+  bulletPrefab: {fileID: 299007435614964634, guid: bd580a8a4289d6a46b9f398c8b67f222, type: 3}
