@@ -9,6 +9,7 @@ public class Bullet : MonoBehaviourPun
     private Rigidbody rb;
     [SerializeField] private float speed;
     private Vector3 direction;
+    [SerializeField] private int damage = 20;
 
     private void Awake()
     {
@@ -28,5 +29,16 @@ public class Bullet : MonoBehaviourPun
             return;
         }
         rb.velocity = direction.normalized * speed;
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!photonView.IsMine) return;
+
+        Player targetPlayer = other.GetComponent<Player>();
+        if (targetPlayer != null && targetPlayer.photonView.ViewID != ownerId) // esto evita dañar al dueño de la bala
+        {
+            targetPlayer.photonView.RPC("TakeDamage", RpcTarget.AllBuffered, damage);
+            PhotonNetwork.Destroy(gameObject); // destruye la bala al impactar
+        }
     }
 }

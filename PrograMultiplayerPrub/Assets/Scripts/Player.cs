@@ -13,7 +13,8 @@ public class Player : MonoBehaviourPun
 
     private Rigidbody rb;
     [SerializeField] private float speed;
-
+    [SerializeField] private int maxHealth = 100;
+    private int currentHealth;
     public static GameObject LocalInstance { get { return localInstance; } }
 
     [SerializeField] private GameObject bulletPrefab;
@@ -31,6 +32,7 @@ public class Player : MonoBehaviourPun
         }
         DontDestroyOnLoad(gameObject);
         rb = GetComponent<Rigidbody>();
+        currentHealth = maxHealth; //inicializar vida
     }
 
 
@@ -43,7 +45,7 @@ public class Player : MonoBehaviourPun
     [PunRPC]
     private void SetColor(float r, float g, float b)
     {
-        // Aplica el color al renderer del jugador
+        // aplica el color al renderer del jugador
         GetComponent<Renderer>().material.color = new Color(r, g, b);
     }
     
@@ -78,5 +80,23 @@ public class Player : MonoBehaviourPun
             obj.GetComponent<Bullet>().SetUp(transform.forward, photonView.ViewID);
         }
 
+    }
+    [PunRPC]
+    public void TakeDamage(int damage)
+    {
+        if (!photonView.IsMine) return;
+
+        currentHealth -= damage;
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+    
+    private void Die()
+    {
+        PhotonNetwork.LeaveRoom(); // para salir de la sala
+        PhotonNetwork.LoadLevel("MainMenu"); // y rgresar al menú principal
     }
 }
